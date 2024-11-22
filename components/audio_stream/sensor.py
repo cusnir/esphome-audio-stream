@@ -18,7 +18,7 @@ CONFIG_SCHEMA = cv.Schema({
     cv.GenerateID(): cv.declare_id(AudioStream),
     cv.Required(CONF_I2S_AUDIO_ID): cv.use_id(i2s_audio.I2SAudio),
     cv.Required(CONF_WEBSOCKET_SERVER): cv.string,
-    cv.Optional(CONF_BUFFER_SIZE, default=512): cv.positive_int,
+    cv.Optional(CONF_BUFFER_SIZE, default=1024): cv.positive_int,
     cv.Optional(CONF_DEBUG_MODE, default=False): cv.boolean,
 }).extend(cv.COMPONENT_SCHEMA)
 
