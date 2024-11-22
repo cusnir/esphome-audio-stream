@@ -5,10 +5,10 @@
 namespace esphome {
 namespace audio_stream {
 
-// Audio processing helpers
 class AudioHelpers {
 public:
     static float calculate_rms(float* samples, size_t count) {
+        if (count == 0) return 0.0f;
         float sum = 0.0f;
         for (size_t i = 0; i < count; i++) {
             sum += samples[i] * samples[i];
@@ -20,8 +20,8 @@ public:
         return db_value + calibration_offset;
     }
 
-    // Add more audio processing helpers as needed
     static float calculate_peak(float* samples, size_t count) {
+        if (count == 0) return 0.0f;
         float peak = 0.0f;
         for (size_t i = 0; i < count; i++) {
             peak = std::max(peak, std::abs(samples[i]));
@@ -34,7 +34,29 @@ public:
     }
 
     static float amplitude_to_db(float amplitude) {
-        return 20 * log10(amplitude);
+        return 20 * log10(std::max(amplitude, 1e-9f));
+    }
+
+    // Add noise reduction
+    static void apply_noise_reduction(float* samples, size_t count, float threshold) {
+        for (size_t i = 0; i < count; i++) {
+            if (std::abs(samples[i]) < threshold) {
+                samples[i] = 0.0f;
+            }
+        }
+    }
+
+    // Add DC offset removal
+    static void remove_dc_offset(float* samples, size_t count) {
+        if (count == 0) return;
+        float sum = 0.0f;
+        for (size_t i = 0; i < count; i++) {
+            sum += samples[i];
+        }
+        float dc_offset = sum / count;
+        for (size_t i = 0; i < count; i++) {
+            samples[i] -= dc_offset;
+        }
     }
 };
 
